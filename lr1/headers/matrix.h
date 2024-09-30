@@ -12,6 +12,7 @@ struct Point
     double z = 0;
 };
 
+std::array<double, 2> project3Dto2D(const std::array<double, 3>& point3D);
 // Функция для умножения матриц 4x4
 void multiplyMatrix(const std::array<std::array<double, 4>, 4>& A, const std::array<std::array<double, 4>, 4>& B, std::array<std::array<double, 4>, 4>& result);
 // Функция для создания единичной матрицы

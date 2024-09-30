@@ -123,3 +123,56 @@ void rotateAroundAxis(Point origin, Point dot, double delta, std::array<double, 
     // Обновление координат точки
     point = resultPoint;
 }
+
+// Углы для проекций
+const double beta = 20.705 * M_PI / 180.0;  // перевод в радианы
+const double gamma = 22.208 * M_PI / 180.0; // перевод в радианы
+
+// Матрица поворота вокруг оси Y
+std::array<std::array<double, 3>, 3> rotationMatrixY = {{
+    {cos(gamma), 0.0, sin(gamma)},
+    {0.0, 1.0, 0.0},
+    {-sin(gamma), 0.0, cos(gamma)}
+}};
+
+// Матрица поворота вокруг оси X
+std::array<std::array<double, 3>, 3> rotationMatrixX = {{
+    {1.0, 0.0, 0.0},
+    {0.0, cos(beta), -sin(beta)},
+    {0.0, sin(beta), cos(beta)}
+}};
+
+// Умножение матрицы на вектор (матрица 3x3 на вектор 3D)
+std::array<double, 3> multiplyMatrixVector(const std::array<std::array<float, 3>, 3>& matrix, const std::array<double, 3>& point) {
+    std::array<double, 3> result = {0, 0, 0};
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            result[i] += matrix[i][j] * point[j];
+        }
+    }
+    return result;
+}
+
+std::array<double, 2> project3Dto2D(const std::array<double, 3>& point) {
+    // double perspectiveDistance = 500.0;
+
+    // double thetaY = M_PI / 12;  // Угол поворота камеры вокруг оси Y (15 градусов)
+    // double thetaX = M_PI / 24;  // Угол поворота камеры вокруг оси X (7.5 градусов)
+
+    // // Вращение вокруг оси Y
+    // double xRotY = point3D[0] * cos(thetaY) - point3D[2] * sin(thetaY);
+    // double zRotY = point3D[0] * sin(thetaY) + point3D[2] * cos(thetaY);
+
+    // // Вращение вокруг оси X (для "подъема" оси Z над плоскостью XZ)
+    // double yRotX = point3D[1] * cos(thetaX) - zRotY * sin(thetaX);
+    // double zRotX = point3D[1] * sin(thetaX) + zRotY * cos(thetaX);
+
+    // // Перспективная проекция
+    // double x2D = xRotY / (1 + zRotX / perspectiveDistance);
+    // double y2D = yRotX / (1 + zRotX / perspectiveDistance);
+
+    std::array<double, 3> rotatedY = multiplyMatrixVector(rotationMatrixY, point);
+    std::array<double, 3> rotatedYX = multiplyMatrixVector(rotationMatrixX, rotatedY);
+
+    return {rotatedYX[0], rotatedYX[1]};
+}

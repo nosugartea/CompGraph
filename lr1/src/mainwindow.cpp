@@ -33,20 +33,20 @@ void MainWindow::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-    std::array<double, 3> axisStart = {-50, -50, -50};
-    std::array<double, 3> axisEnd = {50, 50, 50};
-    drawAxis(axisStart, axisEnd);
+    drawCoordinateSystem(painter);
+    // std::array<double, 3> axisStart = {-50, -50, -50};
+    // std::array<double, 3> axisEnd = {50, 50, 50};
+    // drawAxis(painter, axisStart, axisEnd);
 
     painter.setPen(Qt::black);
-
     shape->draw(painter);
 
-    for (int i = 0; i < clickCount; ++i) {
-        painter.drawEllipse(points[i], 5, 5);
-    }
-    if (clickCount > 1) {
-        drawInfiniteLine(painter, points[clickCount - 2], points[clickCount - 1]);
-    }
+    // for (int i = 0; i < clickCount; ++i) {
+    //     painter.drawEllipse(points[i], 5, 5);
+    // }
+    // if (clickCount > 1) {
+    //     drawInfiniteLine(painter, points[clickCount - 2], points[clickCount - 1]);
+    // }
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event) {
@@ -98,16 +98,39 @@ void MainWindow::drawInfiniteLine(QPainter &painter, const QPoint &p1, const QPo
     painter.drawLine(topLeft, topRight);
 }
 
-void MainWindow::drawAxis(QPainter, const std::array<double, 3> axisStart, const std::array<double, 3> axisEnd) {
+void MainWindow::drawCoordinateSystem(QPainter &painter) {
+    std::array<double, 3> origin = {0, 0, 0}; // Начало координат
+    std::array<double, 3> xAxisEnd = {100, 0, 0};  // Ось X
+    std::array<double, 3> yAxisEnd = {0, 100, 0};  // Ось Y
+    std::array<double, 3> zAxisEnd = {0, 0, 100};  // Ось Z
+
+    // Проецируем точки на 2D
+    auto projectedOrigin = project3Dto2D(origin);
+    auto projectedXEnd = project3Dto2D(xAxisEnd);
+    auto projectedYEnd = project3Dto2D(yAxisEnd);
+    auto projectedZEnd = project3Dto2D(zAxisEnd);
+
+    int centerX = width() / 2;
+    int centerY = height() / 2;
+
+    // Рисуем оси (X - красный, Y - зеленый, Z - синий)
+    painter.setPen(Qt::red);
+    painter.drawLine(centerX + projectedOrigin[0], centerY - projectedOrigin[1],
+                     centerX + projectedXEnd[0], centerY - projectedXEnd[1]);
+
+    painter.setPen(Qt::green);
+    painter.drawLine(centerX + projectedOrigin[0], centerY - projectedOrigin[1],
+                     centerX + projectedYEnd[0], centerY - projectedYEnd[1]);
+
+    painter.setPen(Qt::blue);
+    painter.drawLine(centerX + projectedOrigin[0], centerY - projectedOrigin[1],
+                     centerX + projectedZEnd[0], centerY - projectedZEnd[1]);
+}
+
+void MainWindow::drawAxis(QPainter &painter, const std::array<double, 3> &axisStart, const std::array<double, 3> &axisEnd) {
     auto projectedAxisStart = project3Dto2D(axisStart);
     auto projectedAxisEnd = project3Dto2D(axisEnd);
 
     painter.setPen(Qt::red);
     painter.drawLine(projectedAxisStart[0] + 200, projectedAxisStart[1] + 200, projectedAxisEnd[0] + 200, projectedAxisEnd[1] + 200);
-}
-
-std::array<int, 2> MainWindow::project3Dto2D(const std::array<double, 3>& point) {
-    int x2D = static_cast<int>(point[0] - point[2] * std::cos(M_PI / 6));
-    int y2D = static_cast<int>(point[1] - point[2] * std::sin(M_PI / 6));
-    return {x2D, y2D};
 }

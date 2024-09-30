@@ -21,8 +21,8 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
 
     void drawInfiniteLine(QPainter &painter, const QPoint &p1, const QPoint &p2);
-    void drawAxis(const std::array<double, 3> axisStart, const std::array<double, 3> axisEnd);
-    std::array<int, 2> project3Dto2D(const std::array<double, 3>& point);
+    void drawCoordinateSystem(QPainter &painter);
+    void drawAxis(QPainter &painter, const std::array<double, 3> &axisStart, const std::array<double, 3> &axisEnd);
 
 private:
     Shape *shape;
