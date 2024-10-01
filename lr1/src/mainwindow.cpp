@@ -1,5 +1,5 @@
-#include "mainwindow.h"
-#include "parallelepiped.h"
+#include "headers/mainwindow.h"
+#include "headers/parallelepiped.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent) {

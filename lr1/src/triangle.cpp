@@ -1,4 +1,4 @@
-#include "triangle.h"
+#include "headers/triangle.h"
 
 Triangle::Triangle(const QPoint &p1, const QPoint &p2, const QPoint &p3)
     : p1(p1), p2(p2), p3(p3) {}

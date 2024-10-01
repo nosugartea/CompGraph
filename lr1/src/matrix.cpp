@@ -1,6 +1,8 @@
-#include "matrix.h"
+#include "headers/matrix.h"
 
 #include <cmath>
+
+const double M_PI = 3.14;
 
 void multiplyMatrix(const std::array<std::array<double, 4>, 4>& A, const std::array<std::array<double, 4>, 4>& B, std::array<std::array<double, 4>, 4>& result) {
     for (int i = 0; i < 4; ++i) {
@@ -129,24 +131,25 @@ const double beta = 20.705 * M_PI / 180.0;  // перевод в радианы
 const double gamma = 22.208 * M_PI / 180.0; // перевод в радианы
 
 // Матрица поворота вокруг оси Y
-std::array<std::array<double, 3>, 3> rotationMatrixY = {{
+std::array<std::array<double, 4>, 4> rotationMatrixY = {{
     {cos(gamma), 0.0, sin(gamma)},
     {0.0, 1.0, 0.0},
     {-sin(gamma), 0.0, cos(gamma)}
 }};
 
 // Матрица поворота вокруг оси X
-std::array<std::array<double, 3>, 3> rotationMatrixX = {{
-    {1.0, 0.0, 0.0},
-    {0.0, cos(beta), -sin(beta)},
-    {0.0, sin(beta), cos(beta)}
+std::array<std::array<double, 4>, 4> rotationMatrixX = {{
+    {1.0, 0.0, 0.0, 0.0},
+    {0.0, cos(beta), -sin(beta), 0.0},
+    {0.0, sin(beta), cos(beta), 0.0},
+    {0.0, 0.0, 0.0, 1.0}
 }};
 
 // Умножение матрицы на вектор (матрица 3x3 на вектор 3D)
-std::array<double, 3> multiplyMatrixVector(const std::array<std::array<float, 3>, 3>& matrix, const std::array<double, 3>& point) {
-    std::array<double, 3> result = {0, 0, 0};
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
+std::array<double, 4> multiplyMatrixVector(const std::array<std::array<double, 4>, 4>& matrix, const std::array<double, 4>& point) {
+    std::array<double, 4> result = {0, 0, 0, 0};
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
             result[i] += matrix[i][j] * point[j];
         }
     }
@@ -154,7 +157,7 @@ std::array<double, 3> multiplyMatrixVector(const std::array<std::array<float, 3>
 }
 
 std::array<double, 2> project3Dto2D(const std::array<double, 3>& point) {
-    // double perspectiveDistance = 500.0;
+    double perspectiveDistance = 500.0;
 
     // double thetaY = M_PI / 12;  // Угол поворота камеры вокруг оси Y (15 градусов)
     // double thetaX = M_PI / 24;  // Угол поворота камеры вокруг оси X (7.5 градусов)
@@ -171,8 +174,18 @@ std::array<double, 2> project3Dto2D(const std::array<double, 3>& point) {
     // double x2D = xRotY / (1 + zRotX / perspectiveDistance);
     // double y2D = yRotX / (1 + zRotX / perspectiveDistance);
 
-    std::array<double, 3> rotatedY = multiplyMatrixVector(rotationMatrixY, point);
-    std::array<double, 3> rotatedYX = multiplyMatrixVector(rotationMatrixX, rotatedY);
 
-    return {rotatedYX[0], rotatedYX[1]};
+//    std::array<double, 3> rotatedY = multiplyMatrixVector(rotationMatrixY, point);
+//    std::array<double, 3> rotatedYX = multiplyMatrixVector(rotationMatrixX, rotatedY);
+//     return {rotatedYX[0], rotatedYX[1]};
+
+//    double x2D = point[0] / (1 + point[2] / perspectiveDistance);
+//    double y2D = point[1] / (1 + point[2] / perspectiveDistance);
+
+    double angle1 = 160 * M_PI / 180.0;
+    double angle2 = 97.10 * M_PI / 180.0;
+    double x2D = point[0] * std::cos(angle1) - point[2] * std::cos(angle1);
+    double y2D = point[1] - (point[0] * std::sin(angle1) + point[2] * std::sin(angle1));
+
+    return {x2D, y2D};
 }

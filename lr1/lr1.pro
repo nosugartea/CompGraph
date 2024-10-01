@@ -10,21 +10,21 @@ CONFIG += c++17
 
 SOURCES += \
     #linewidget.cpp \
-    main.cpp \
-    mainwindow.cpp \
-    matrix.cpp \
-    parallelepiped.cpp \
-    parallelogram.cpp \
-    triangle.cpp \
+    src/main.cpp \
+    src/mainwindow.cpp \
+    src/matrix.cpp \
+    src/parallelepiped.cpp \
+    src/parallelogram.cpp \
+    src/triangle.cpp \
 
 HEADERS += \
     #linewidget.h \
-    mainwindow.h \
-    parallelepiped.h \
-    parallelogram.h \
-    shape.h \
-    triangle.h \
-    matrix.h \
+    headers/mainwindow.h \
+    headers/parallelepiped.h \
+    headers/parallelogram.h \
+    headers/shape.h \
+    headers/triangle.h \
+    headers/matrix.h \
 
 #FORMS += \
 #    mainwindow.ui
