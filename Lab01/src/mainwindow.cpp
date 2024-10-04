@@ -21,8 +21,6 @@ void MainWindow::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-    //drawCoordinateSystem(painter);
-
     shape->draw(painter);
     radiusChanger->draw(painter);
     if (clickCount == 1) {
@@ -79,27 +77,6 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
     }
 }
 
-//void MainWindow::drawCoordinateSystem(QPainter &painter)
-//{
-//    int zeroX = this->width() / 2,
-//        zeroY = this->height() / 2;
-
-//    painter.drawLine(0, zeroY, zeroX * 2, zeroY); // Ось X
-//    painter.drawLine(zeroX, 0, zeroX, zeroY * 2); // Ось Y
-
-//    // Рисуем деления на осях
-//    qreal step = 50; // Шаг деления
-//    for (qreal x = 0; x <= zeroX * 2; x += step) {
-//        painter.drawLine(x, zeroY + 5, x, zeroY - 5);
-//        painter.drawText(QPointF(x, zeroY - 10), QString::number(static_cast<int>((-zeroX + x) / step)));
-//    }
-
-//    for (qreal y = 0; y <= zeroY * 2; y += step) {
-//        painter.drawLine(zeroX + 5, y, zeroX - 5, y);
-//        painter.drawText(QPointF(zeroX + 20, y), QString::number(static_cast<int>((-zeroY + y)/ step)));
-//    }
-//}
-
 void MainWindow::drawTangentLine(QPainter &painter, const QPoint &point)
 {
     QPoint center1 = QPoint(shape->x(), shape->y());
@@ -145,34 +122,4 @@ void MainWindow::drawInfiniteLine(QPainter &painter, const QPoint &p1, const QPo
     QPoint topRight(2 * width, k * (2 * width) + b);
 
     painter.drawLine(topLeft, topRight);
-}
-
-QPoint MainWindow::moveRadiusChanger(const QPoint &point)
-{
-    QPoint center(shape->x(), shape->y());
-    double radius = shape->r();
-
-    QPoint point1, point2;
-    if (point.y() == center.y())
-    {
-        point1 = QPoint(center.x() + radius, center.y());
-        point2 = QPoint(center.x() - radius, center.y());
-    } else if (point.x() == center.x())
-    {
-        point1 = QPoint(center.x(), center.y() + radius);
-        point2 = QPoint(center.x(), center.y() - radius);
-    } else
-    {
-        double k1 = abs(point.x() - center.x()) * radius / QLineF(point, center).length();
-        double k2 = abs(point.y() - center.y()) * radius / QLineF(point, center).length();
-
-        point1 = QPoint(center.x() + k1, center.y() + k2);
-        point2 = QPoint(center.x() - k1, center.y() - k2);
-    }
-
-    if (QLineF(point1, point).length() < QLineF(point, point2).length())
-    {
-        return point1;
-    }
-    return point2;
 }

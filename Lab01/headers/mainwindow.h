@@ -23,7 +23,6 @@ private:
     //void drawCoordinateSystem(QPainter &painter);
     void drawTangentLine(QPainter &painter, const QPoint &point);
     void drawInfiniteLine(QPainter &painter, const QPoint &p1, const QPoint &p2);
-    QPoint moveRadiusChanger(const QPoint &point);
 
     Circle *shape, *radiusChanger;
     bool isDragging, isChangingRadius;
