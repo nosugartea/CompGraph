@@ -6,11 +6,7 @@ Circle::~Circle() {}
 
 void Circle::draw(QPainter &painter) const
 {
-    QPen pen;
-    pen.setWidth(4);
-    painter.setPen(pen);
-    painter.setPen(Qt::darkCyan);
-    painter.drawEllipse(center, 2, 2);
+    painter.drawEllipse(center, 1, 1);
     painter.drawEllipse(center, radius, radius);
 }
 

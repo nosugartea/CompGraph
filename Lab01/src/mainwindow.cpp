@@ -21,7 +21,15 @@ void MainWindow::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
+    QPen pen;
+    pen.setWidth(2);
+    pen.setColor(Qt::darkCyan);
+    painter.setPen(pen);
     shape->draw(painter);
+
+    QBrush brush(Qt::darkCyan);
+    painter.setBrush(brush);
+
     radiusChanger->draw(painter);
     if (clickCount == 1) {
         painter.setPen(Qt::red);
