@@ -95,15 +95,15 @@ void MainWindow::drawTangentLine(QPainter &painter, const QPoint &point)
     qreal radius2 = distance / 2;
 
     // Если точка лежит внутри окружности, касательные невозможны
-    if (distance <= radius1) {
+    if (distance < radius1) {
         return;
     }
 
-    double d = sqrt((center2.x() - center1.x())*(center2.x() - center1.x()) + (center2.y() - center1.y())*(center2.y() - center1.y()));
-    double a = (radius1 * radius1 - radius2 * radius2 + d * d)/ (2 * d);
+    double d = radius2;
+    double a = (radius1 * radius1)/ (2 * d);
     double h = sqrt(radius1 * radius1 - a * a);
-    double Px = center1.x() + a*(center2.x() - center1.x()) / d;
-    double Py = center1.y() + a*(center2.y() - center1.y()) / d;
+    double Px = center1.x() + a * (center2.x() - center1.x()) / d;
+    double Py = center1.y() + a * (center2.y() - center1.y()) / d;
 
     QPoint topLeft, topRight; // точки касательной к окружности
     topLeft.setX(Px + h * (center2.y() - center1.y()) / d);
