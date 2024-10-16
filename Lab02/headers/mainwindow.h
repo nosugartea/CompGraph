@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 
-#include <mygraphicview.h>
+#include <headers/mygraphicview.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -25,6 +25,6 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    MyGraphicView  *myPicture;
+    MyGraphicView  *myView;
 };
 #endif // MAINWINDOW_H

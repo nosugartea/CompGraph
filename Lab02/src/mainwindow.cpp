@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "headers/mainwindow.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -8,8 +8,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     setFixedSize(940, 600);
-    myPicture   = new MyGraphicView();
-    ui->graphicLayout->addWidget(myPicture);
+    myView = new MyGraphicView();
+    ui->graphicLayout->addWidget(myView);
 
     connect(ui->drawButton, &QPushButton::clicked, this, &MainWindow::onDrawButtonClick);
     connect(ui->cleanButton, &QPushButton::clicked, this, &MainWindow::onCleanButtonClick);
@@ -22,10 +22,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::onDrawButtonClick()
 {
-    myPicture->makeBezierCurve();
+    myView->makeBezierCurve();
 }
 
 void MainWindow::onCleanButtonClick()
 {
-    myPicture->cleanAll();
+    myView->cleanAll();
 }

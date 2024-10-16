@@ -1,6 +1,5 @@
-#include "mygraphicview.h"
-
-#include "beziercurve.h"
+#include "headers/mygraphicview.h"
+#include "headers/beziercurve.h"
 
 MyGraphicView::MyGraphicView(QWidget *parent)
     : QGraphicsView(parent)
@@ -27,10 +26,8 @@ MyGraphicView::MyGraphicView(QWidget *parent)
 
 MyGraphicView::~MyGraphicView()
 {
-    qDeleteAll(points);
-    qDeleteAll(lines);
+    cleanAll();
     delete scene;
-    delete timer;
 }
 
 void MyGraphicView::mousePressEvent(QMouseEvent *event)
@@ -39,15 +36,14 @@ void MyGraphicView::mousePressEvent(QMouseEvent *event)
         // Получаем позицию нажатия
         QPointF scenePos = mapToScene(event->pos());
 
-        foreach (QGraphicsEllipseItem *point, points) {
+        for (QGraphicsEllipseItem *point : points) {
             if (point->contains(point->mapFromScene(scenePos))) {
                 currentPoint = point;
                 return;
             }
         }
-        QGraphicsEllipseItem *point = scene->addEllipse(scenePos.x() - 3, scenePos.y() - 3, 6, 6, QPen(Qt::NoPen), QBrush(Qt::magenta));
+        QGraphicsEllipseItem *point = scene->addEllipse(scenePos.x() - 4, scenePos.y() - 4, 8, 8, QPen(Qt::NoPen), QBrush(Qt::magenta));
         points.append(point);
-        qDebug() << scenePos.x() << scenePos.y();
         connectPointsWithDashedLines();
     } else if (event->button() == Qt::RightButton) {
         // Удаляем последнюю поставленную точку
@@ -118,6 +114,16 @@ void MyGraphicView::updateLines(int pointIndex)
 
 void MyGraphicView::makeBezierCurve()
 {
+    if (!bezierPoints.isEmpty()) {
+        bezierPoints.clear();
+
+        if (!bezierCurve.isEmpty()){
+            for (auto* it : bezierCurve) {
+                delete it;
+            }
+            bezierCurve.clear();
+        }
+    }
     QVector<QPointF> part;
     for (qsizetype i = 0; i < points.size(); ++i) {
         QGraphicsEllipseItem *newPoint = points[i];
@@ -163,17 +169,18 @@ void MyGraphicView::cleanAll()
     for (auto* it : points) {
         delete it;
     }
+    points.clear();
 
     for (auto* it : lines) {
         delete it;
     }
+    lines.clear();
 
     for (auto* it : bezierCurve) {
         delete it;
     }
+    bezierCurve.clear();
 
     delete currentPoint;
-    points.clear();
-    lines.clear();
-    bezierCurve.clear();
+    bezierPoints.clear();
 }

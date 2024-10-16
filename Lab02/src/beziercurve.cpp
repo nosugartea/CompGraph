@@ -1,5 +1,4 @@
-#include "beziercurve.h"
-#include "QDebug"
+#include "headers/beziercurve.h"
 
 BezierCurve::BezierCurve() {};
 
@@ -14,7 +13,7 @@ double BezierCurve::binomialCoefficient(int n, int k)
     return c;
 }
 
- QPointF BezierCurve::polynomialFunction(QVector<QPointF> controlPoints, double t)
+QPointF BezierCurve::polynomialFunction(QVector<QPointF> controlPoints, double t)
 {
     QPointF rezult;
     int degree = controlPoints.size() - 1;
@@ -23,6 +22,5 @@ double BezierCurve::binomialCoefficient(int n, int k)
         rezult.rx() += b * controlPoints[i].x();
         rezult.ry() += b * controlPoints[i].y();
     }
-
     return rezult;
 }

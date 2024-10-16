@@ -9,18 +9,18 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    beziercurve.cpp \
-    main.cpp \
-    mainwindow.cpp \
-    mygraphicview.cpp
+    src/beziercurve.cpp \
+    src/main.cpp \
+    src/mainwindow.cpp \
+    src/mygraphicview.cpp
 
 HEADERS += \
-    beziercurve.h \
-    mainwindow.h \
-    mygraphicview.h
+    headers/beziercurve.h \
+    headers/mainwindow.h \
+    headers/mygraphicview.h
 
 FORMS += \
-    mainwindow.ui
+    forms/mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
