@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    setWindowTitle("Lab02");
     setFixedSize(940, 600);
     myView = new MyGraphicView();
     ui->graphicLayout->addWidget(myView);

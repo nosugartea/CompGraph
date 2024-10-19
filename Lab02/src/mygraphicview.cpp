@@ -42,6 +42,7 @@ void MyGraphicView::mousePressEvent(QMouseEvent *event)
                 return;
             }
         }
+
         QGraphicsEllipseItem *point = scene->addEllipse(scenePos.x() - 4, scenePos.y() - 4, 8, 8, QPen(Qt::NoPen), QBrush(Qt::magenta));
         points.append(point);
         connectPointsWithDashedLines();
@@ -134,11 +135,16 @@ void MyGraphicView::makeBezierCurve()
                 drawBezierCurve(part);
                 part.clear();
             } else {
-                int minX = std::min(points[i]->boundingRect().center().x(), points[i + 1]->boundingRect().center().x()),
-                    minY = std::min(points[i]->boundingRect().center().y(), points[i + 1]->boundingRect().center().y());
+                QPointF additionalPoint;
+                if (i == points.size() - 2) {
+                    additionalPoint = QPointF(points[i + 1]->boundingRect().center().x(), points[i + 1]->boundingRect().center().y());
+                } else {
+                    int minX = std::min(points[i]->boundingRect().center().x(), points[i + 1]->boundingRect().center().x()),
+                        minY = std::min(points[i]->boundingRect().center().y(), points[i + 1]->boundingRect().center().y());
 
-                QPointF additionalPoint = QPointF(minX + (abs(points[i]->boundingRect().center().x() - points[i + 1]->boundingRect().center().x())) / 2,
-                                                  minY + (abs(points[i]->boundingRect().center().y() - points[i + 1]->boundingRect().center().y())) / 2);
+                    additionalPoint = QPointF(minX + (abs(points[i]->boundingRect().center().x() - points[i + 1]->boundingRect().center().x())) / 2,
+                                              minY + (abs(points[i]->boundingRect().center().y() - points[i + 1]->boundingRect().center().y())) / 2);
+                }
 
                 part.push_back(additionalPoint);
                 drawBezierCurve(part);

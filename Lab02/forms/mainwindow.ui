@@ -35,7 +35,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Draw Splain</string>
+     <string>Draw Curve</string>
     </property>
    </widget>
    <widget class="QPushButton" name="cleanButton">
