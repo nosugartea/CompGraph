@@ -250,3 +250,50 @@ void BezierSurfaceWidget::drawBezierSurface(QPainter &painter, const QMatrix4x4 
         }
     }
 }
+
+// void TInterface::openGraph()
+// {
+//     QString fileName = "";
+//     fileName = QFileDialog::getOpenFileName(this, ("Open File"), "../Graphs", ("Graph (*.grh)"));
+//     filePath->setText(fileName);
+
+//     if (fileName == "")
+//     {
+//         errorName->setText("Ошибка: Вы не выбрали файл с графом.");
+//         return;
+//     }
+
+//     QFile file(fileName);
+//     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+//     {
+//         errorName->setText("Ошибка: Файл не доступен к чтению.");
+//         return;
+// //     }
+// QTextStream in(&file);
+
+// int code = graph->setArc(in);
+// switch (code)
+// {
+// case 1:
+//     errorName->setText("Ошибка: Неизвестный символ вместо количества вершин графа.");
+//     return;
+// case 2:
+//     errorName->setText("Ошибка: Отрицательное значение количества вершин графа.");
+//     return;
+// case 3:
+//     errorName->setText("Ошибка: Неизвестный символ в матрице событий.");
+//     return;
+// case 4:
+//     errorName->setText("Ошибка: Отрицательное значение или 0 в матрице событий.");
+//     return;
+// case 5:
+//     errorName->setText("Ошибка: Указанное количество вершин отличается от фактического.");
+//     return;
+// case 0:
+// default:
+//     break;
+// }
+// file.close();
+
+// canvas.show();
+// }
