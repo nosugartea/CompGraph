@@ -25,6 +25,9 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
 
+private slots:
+    void openFile();
+
 private:
     std::vector<std::vector<QVector3D>> controlPoints; // Контрольные точки для поверхности Безье
     float angleX, angleY;                              // Углы поворота

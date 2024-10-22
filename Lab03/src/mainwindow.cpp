@@ -1,104 +1,81 @@
 #include "headers/mainwindow.h"
+#include "headers/mathfile.h"
 
-#include <cmath>
-
-float computeCurvature(const QVector3D &p1, const QVector3D &p2, const QVector3D &p3) {
-    QVector3D v1 = p2 - p1;
-    QVector3D v2 = p3 - p1;
-    float angle = QVector3D::dotProduct(v1.normalized(), v2.normalized());
-    return acos(angle);  // Кривизна, выраженная через угол между векторами
-}
-
-QColor colorForCurvature(float curvature, float maxCurvature) {
-    float ratio = curvature / maxCurvature;
-    int colorValue = static_cast<int>(255 * ratio);
-    return QColor(colorValue, 0, 255 - colorValue);
-}
-
-// Функция для вычисления биномиального коэффициента C^b_a
-double binomialCoefficient(int a, int b)
-{
-    if (b > a - b)
-        b = a - b;
-    int c = 1;
-    for (int i = 0; i < b; ++i) {
-        c = c * (a - i) / (i + 1);
-    }
-    return c;
-}
-
-// Вращение вокруг оси X
-QMatrix4x4 rotateX(float angle) {
-    float rad = angle * M_PI / 180.0f; // Конвертация в радианы
-    QMatrix4x4 rotationMatrix;
-    rotationMatrix.setToIdentity(); // Устанавливка матрицы в единичную матрицу
-
-    rotationMatrix(1, 1) = std::cos(rad);
-    rotationMatrix(1, 2) = -std::sin(rad);
-    rotationMatrix(2, 1) = std::sin(rad);
-    rotationMatrix(2, 2) = std::cos(rad);
-
-    return rotationMatrix;
-}
-
-// Вращение вокруг оси Y
-QMatrix4x4 rotateY(float angle) {
-    float rad = angle * M_PI / 180.0f; // Конвертация в радианы
-    QMatrix4x4 rotationMatrix;
-    rotationMatrix.setToIdentity(); // Устанавливка матрицы в единичную матрицу
-
-    rotationMatrix(0, 0) = std::cos(rad);
-    rotationMatrix(0, 2) = std::sin(rad);
-    rotationMatrix(2, 0) = -std::sin(rad);
-    rotationMatrix(2, 2) = std::cos(rad);
-
-    return rotationMatrix;
-}
-
-// Применение вращений для осей X и Y
-QMatrix4x4 applyRotation(float angleX, float angleY) {
-    QMatrix4x4 rotationMatrixX = rotateX(angleX); // Поворот вокруг X
-    QMatrix4x4 rotationMatrixY = rotateY(angleY); // Поворот вокруг Y
-
-    return rotationMatrixY * rotationMatrixX; // Сначала X, потом Y
-}
+#include <QPushButton>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QTextStream>
+#include <QRegularExpression>
 
 BezierSurfaceWidget::BezierSurfaceWidget(QWidget *parent) : QWidget(parent), angleX(0), angleY(0)
 {
-    controlPoints = {
-        { QVector3D(-1, -1, 0), QVector3D(0, -1, 2), QVector3D(1, -1, 0) },
-        { QVector3D(-1, 0, 3), QVector3D(0, 0, 5), QVector3D(1, 0, 3) },
-        { QVector3D(-1, 1, 0), QVector3D(0, 1, 2), QVector3D(1, 1, 0) }
-    };
+    setWindowTitle("Lab03");
+    setFixedSize(940, 600);
+    QPushButton *button = new QPushButton("Выбрать набор точек", this);
+    button->setGeometry(20, 20, 210, 70);
+    connect(button, &QPushButton::clicked, this, &BezierSurfaceWidget::openFile);
 
-    // Простой плоский прямоугольник
-    // controlPoints = {
-    //     { QVector3D(0, 0, 0), QVector3D(1, 0, 0), QVector3D(2, 0, 0) },
-    //     { QVector3D(0, 1, 0), QVector3D(1, 1, 0), QVector3D(2, 1, 0) },
-    //     { QVector3D(0, 2, 0), QVector3D(1, 2, 0), QVector3D(2, 2, 0) }
-    // };
+    button->setStyleSheet(
+        "QPushButton {"
+        "   background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, "
+        "                                   stop:0 rgba(255, 0, 0, 0.7), "
+        "                                   stop:1 rgba(0, 0, 255, 0.7));"
+        "   color: white;"
+        "   border-radius: 12px;"
+        "}"
+        "QPushButton:pressed {"
+        "   background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, "
+        "                                   stop:0 rgba(255, 0, 0, 0.5), "
+        "                                   stop:1 rgba(0, 0, 255, 0.5));"
+        "}"
+    );
+}
 
-    // Гиперболический купол
-    // controlPoints = {
-    //     { QVector3D(0, 0, 0), QVector3D(1, 0, 0.5), QVector3D(2, 0, 0) },
-    //     { QVector3D(0, 1, 0.5), QVector3D(1, 1, 1), QVector3D(2, 1, 0.5) },
-    //     { QVector3D(0, 2, 0), QVector3D(1, 2, 0.5), QVector3D(2, 2, 0) }
-    // };
+void BezierSurfaceWidget::openFile()
+{
+    QString fileName = QFileDialog::getOpenFileName(nullptr,
+           "Выберете файл с вершинами",
+           QDir::homePath(),
+           "Bezie Files (*.bezier);;All Files (*)"); // Фильтр файлов
 
-    // Седловидная поверхность
-    // controlPoints = {
-    //     { QVector3D(0, 0, 1), QVector3D(1, 0, 0), QVector3D(2, 0, 1) },
-    //     { QVector3D(0, 1, 0), QVector3D(1, 1, -1), QVector3D(2, 1, 0) },
-    //     { QVector3D(0, 2, 1), QVector3D(1, 2, 0), QVector3D(2, 2, 1) }
-    // };
+    if (fileName.isEmpty()) {
+        QMessageBox::warning(nullptr, "Предупреждение", "Файл не выбран");
+        return;
+    }
 
-    // Волнообразная поверхность
-    // controlPoints = {
-    //     { QVector3D(0, 0, 0), QVector3D(1, 0, 1), QVector3D(2, 0, 0), QVector3D(3, 0, 1) },
-    //     { QVector3D(0, 1, 1), QVector3D(1, 1, 0), QVector3D(2, 1, 1), QVector3D(3, 1, 0) },
-    //     { QVector3D(0, 2, 0), QVector3D(1, 2, 1), QVector3D(2, 2, 0), QVector3D(3, 2, 1) },
-    //     { QVector3D(0, 3, 1), QVector3D(1, 3, 0), QVector3D(2, 3, 1), QVector3D(3, 3, 0) }
-    // };
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::warning(nullptr, "Предупреждение", "Не удалось открыть файл: " + fileName);
+        return;
+    }
+
+    controlPoints.clear();
+
+    QTextStream in(&file);
+    std::vector<QVector3D> currentRow;
+    QRegularExpression regex(R"(\(\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*\))");
+
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        QRegularExpressionMatchIterator it = regex.globalMatch(line);
+
+        while (it.hasNext()) {
+            QRegularExpressionMatch match = it.next();
+            if (match.hasMatch()) {
+                float x = match.captured(1).toFloat();
+                float y = match.captured(2).toFloat();
+                float z = match.captured(3).toFloat();
+                currentRow.push_back(QVector3D(x, y, z));
+            }
+        }
+
+        // Если собрали строку точек, добавляем её в итоговый вектор
+        if (!currentRow.empty()) {
+            controlPoints.push_back(currentRow);
+            currentRow.clear();
+        }
+    }
+    file.close();
 }
 
 void BezierSurfaceWidget::paintEvent(QPaintEvent *event)
@@ -112,7 +89,8 @@ void BezierSurfaceWidget::paintEvent(QPaintEvent *event)
     transformMatrix = applyRotation(angleX, angleY);
 
     // Рисуем поверхность Безье
-    drawBezierSurface(painter, transformMatrix);
+    if (!controlPoints.empty())
+        drawBezierSurface(painter, transformMatrix);
 }
 
 // Обработка вращения по осям
@@ -130,7 +108,6 @@ void BezierSurfaceWidget::mousePressEvent(QMouseEvent *event)
 {
     prevMousePos = event->pos();
 }
-
 
 // Функция вычисления поверхности Безье для данной точки u, v
 QVector3D BezierSurfaceWidget::bezierSurface(float u, float v) {
@@ -164,33 +141,6 @@ QPointF BezierSurfaceWidget::projectPoint(const QVector3D &point, const QMatrix4
     float perspective = 3.0f / (3.0f + transformedPoint.z());
     return QPointF(width() / 2 + transformedPoint.x() * 100 * perspective, height() / 2 - transformedPoint.y() * 100 * perspective);
 }
-
-// // Функция для рисования поверхности Безье
-// void BezierSurfaceWidget::drawBezierSurface(QPainter &painter, const QMatrix4x4 &transform) {
-//     const int steps = 20; // Количество шагов для дискретизации
-
-//     for (int i = 0; i < steps; ++i) {
-//         for (int j = 0; j < steps; ++j) {
-//             // Параметры u и v для углов ячеек
-//             float u1 = static_cast<float>(i) / steps;
-//             float v1 = static_cast<float>(j) / steps;
-//             float u2 = static_cast<float>(i + 1) / steps;
-//             float v2 = static_cast<float>(j + 1) / steps;
-
-//             // Вычисляем точки на поверхности Безье
-//             QPointF p1 = projectPoint(bezierSurface(u1, v1), transform);
-//             QPointF p2 = projectPoint(bezierSurface(u2, v1), transform);
-//             QPointF p3 = projectPoint(bezierSurface(u2, v2), transform);
-//             QPointF p4 = projectPoint(bezierSurface(u1, v2), transform);
-
-//             // Рисуем сетку поверхности
-//             painter.drawLine(p1, p2);
-//             painter.drawLine(p2, p3);
-//             painter.drawLine(p3, p4);
-//             painter.drawLine(p4, p1);
-//         }
-//     }
-// }
 
 void BezierSurfaceWidget::drawBezierSurface(QPainter &painter, const QMatrix4x4 &transform) {
     const int steps = 20;
@@ -240,6 +190,7 @@ void BezierSurfaceWidget::drawBezierSurface(QPainter &painter, const QMatrix4x4 
 
             // Устанавливаем цвет для текущей ячейки
             QPen pen(color);
+            qDebug() << color;
             painter.setPen(pen);
 
             // Рисуем ячейку сетки
