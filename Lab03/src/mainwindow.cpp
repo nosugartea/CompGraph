@@ -109,10 +109,10 @@ void BezierSurfaceWidget::mousePressEvent(QMouseEvent *event)
     prevMousePos = event->pos();
 }
 
-// Функция вычисления поверхности Безье для данной точки u, v
-QVector3D BezierSurfaceWidget::bezierSurface(float u, float v) {
-    int m = controlPoints.size() - 1; // количество контрольных точек по u
-    int n = controlPoints[0].size() - 1; // количество контрольных точек по v
+// Функция вычисления поверхности Безье для данной точки s, t
+QVector3D BezierSurfaceWidget::bezierSurface(float s, float t) {
+    int m = controlPoints.size() - 1; // количество контрольных точек по s
+    int n = controlPoints[0].size() - 1; // количество контрольных точек по t
     QVector3D point(0, 0, 0); // точка на поверхности
 
     // Проход по контрольным точкам и расчет взвешенной суммы
@@ -123,23 +123,14 @@ QVector3D BezierSurfaceWidget::bezierSurface(float u, float v) {
             int Cj_n = binomialCoefficient(n, j);
 
             // Вычисляем веса по формуле: s^i (1-s)^(m-i) и t^j (1-t)^(n-j)
-            float weightU = Ci_m * pow(u, i) * pow(1 - u, m - i);
-            float weightV = Cj_n * pow(v, j) * pow(1 - v, n - j);
+            float weightS = Ci_m * pow(s, i) * pow(1 - s, m - i);
+            float weightT = Cj_n * pow(t, j) * pow(1 - t, n - j);
 
             // Взвешиваем текущую контрольную точку и добавляем к итоговой точке
-            point += controlPoints[i][j] * weightU * weightV;
+            point += controlPoints[i][j] * weightS * weightT;
         }
     }
-
     return point;
-}
-
-// Проецирование 3D-точки на 2D-экран
-QPointF BezierSurfaceWidget::projectPoint(const QVector3D &point, const QMatrix4x4 &transform) {
-    QVector3D transformedPoint = transform.map(point);
-    // Используем простую перспективную проекцию
-    float perspective = 3.0f / (3.0f + transformedPoint.z());
-    return QPointF(width() / 2 + transformedPoint.x() * 100 * perspective, height() / 2 - transformedPoint.y() * 100 * perspective);
 }
 
 void BezierSurfaceWidget::drawBezierSurface(QPainter &painter, const QMatrix4x4 &transform) {
@@ -173,16 +164,16 @@ void BezierSurfaceWidget::drawBezierSurface(QPainter &painter, const QMatrix4x4 
     int index = 0;
     for (int i = 0; i < steps; ++i) {
         for (int j = 0; j < steps; ++j) {
-            float u1 = static_cast<float>(i) / steps;
-            float v1 = static_cast<float>(j) / steps;
-            float u2 = static_cast<float>(i + 1) / steps;
-            float v2 = static_cast<float>(j + 1) / steps;
+            float s1 = static_cast<float>(i) / steps;
+            float t1 = static_cast<float>(j) / steps;
+            float s2 = static_cast<float>(i + 1) / steps;
+            float t2 = static_cast<float>(j + 1) / steps;
 
             // Получаем точки поверхности для отрисовки
-            QPointF p1 = projectPoint(bezierSurface(u1, v1), transform);
-            QPointF p2 = projectPoint(bezierSurface(u2, v1), transform);
-            QPointF p3 = projectPoint(bezierSurface(u2, v2), transform);
-            QPointF p4 = projectPoint(bezierSurface(u1, v2), transform);
+            QPointF p1 = projectPoint(bezierSurface(s1, t1), transform, width(), height());
+            QPointF p2 = projectPoint(bezierSurface(s2, t1), transform, width(), height());
+            QPointF p3 = projectPoint(bezierSurface(s2, t2), transform, width(), height());
+            QPointF p4 = projectPoint(bezierSurface(s1, t2), transform, width(), height());
 
             // Получаем кривизну для текущей ячейки
             float curvature = curvatures[index++];
@@ -190,7 +181,6 @@ void BezierSurfaceWidget::drawBezierSurface(QPainter &painter, const QMatrix4x4 
 
             // Устанавливаем цвет для текущей ячейки
             QPen pen(color);
-            qDebug() << color;
             painter.setPen(pen);
 
             // Рисуем ячейку сетки

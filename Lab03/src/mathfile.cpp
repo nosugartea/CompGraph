@@ -55,14 +55,26 @@ QMatrix4x4 applyRotation(float angleX, float angleY)
     return rotationMatrixY * rotationMatrixX; // Сначала X, потом Y
 }
 
-float computeCurvature(const QVector3D &p1, const QVector3D &p2, const QVector3D &p3) {
+// Проецирование 3D-точки на 2D-экран
+QPointF projectPoint(const QVector3D &point, const QMatrix4x4 &transform, const unsigned width, const unsigned height)
+{
+    QVector3D transformedPoint = transform.map(point);
+    // Используем простую перспективную проекцию
+    float perspective = 3.0f / (3.0f + transformedPoint.z());
+    return QPointF(width / 2 + transformedPoint.x() * 100 * perspective, height / 2 - transformedPoint.y() * 100 * perspective);
+}
+
+
+float computeCurvature(const QVector3D &p1, const QVector3D &p2, const QVector3D &p3)
+{
     QVector3D v1 = p2 - p1;
     QVector3D v2 = p3 - p1;
     float angle = QVector3D::dotProduct(v1.normalized(), v2.normalized());
     return acos(angle);  // Кривизна, выраженная через угол между векторами
 }
 
-QColor colorForCurvature(float curvature, float maxCurvature) {
+QColor colorForCurvature(float curvature, float maxCurvature)
+{
     float ratio = curvature / maxCurvature;
     int colorValue = static_cast<int>(255 * ratio);
     return QColor(colorValue, 0, 255 - colorValue);
