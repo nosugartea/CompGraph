@@ -25,12 +25,15 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
 
+private slots:
+    void openFile();
+
 private:
     std::vector<std::vector<QVector3D>> controlPoints; // Контрольные точки для поверхности Безье
     float angleX, angleY;                              // Углы поворота
     QPoint prevMousePos;                               // Предыдущая позиция мыши
 
-    QPointF projectPoint(const QVector3D &point, const QMatrix4x4 &transform);  // Проецирование 3D точки на 2D с учетом матричных преобразований
+    //QPointF projectPoint(const QVector3D &point, const QMatrix4x4 &transform);  // Проецирование 3D точки на 2D с учетом матричных преобразований
     QVector3D bezierSurface(float u, float v);                                  // Построение поверхности Безье
     void drawBezierSurface(QPainter &painter, const QMatrix4x4 &transform);     // Рисуем поверхность Безье
 };

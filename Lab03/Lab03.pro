@@ -10,10 +10,12 @@ CONFIG += c++17
 
 SOURCES += \
     src/main.cpp \
-    src/mainwindow.cpp
+    src/mainwindow.cpp \
+    src/mathfile.cpp
 
 HEADERS += \
-    headers/mainwindow.h
+    headers/mainwindow.h \
+    headers/mathfile.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
