@@ -2,8 +2,6 @@
 
 #include <cmath>
 
-unsigned int M_PI = 3.1415926535;
-
 // Функция для вычисления биномиального коэффициента C^b_a
 double binomialCoefficient(int a, int b)
 {
@@ -19,7 +17,8 @@ double binomialCoefficient(int a, int b)
 // Вращение вокруг оси X
 QMatrix4x4 rotateX(float angle)
 {
-    float rad = angle * M_PI / 180.0f; // Конвертация в радианы
+    double pi = 3.1415926535;
+    float rad = angle * pi / 180.0f; // Конвертация в радианы
     QMatrix4x4 rotationMatrix;
     rotationMatrix.setToIdentity(); // Устанавливка матрицы в единичную матрицу
 
@@ -34,7 +33,8 @@ QMatrix4x4 rotateX(float angle)
 // Вращение вокруг оси Y
 QMatrix4x4 rotateY(float angle)
 {
-    float rad = angle * M_PI / 180.0f; // Конвертация в радианы
+    double pi = 3.1415926535;
+    float rad = angle * pi / 180.0f; // Конвертация в радианы
     QMatrix4x4 rotationMatrix;
     rotationMatrix.setToIdentity(); // Устанавливка матрицы в единичную матрицу
 
