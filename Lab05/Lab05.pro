@@ -9,15 +9,13 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    src/clipwidget.cpp \
-    src/clipwindow.cpp \
     src/main.cpp \
-    src/mathfile.cpp
+    src/mathfile.cpp \
+    src/zbufferwidget.cpp
 
 HEADERS += \
     headers/mathfile.h \
-    headers/clipwidget.h \
-    headers/clipwindow.h
+    headers/zbufferwidget.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

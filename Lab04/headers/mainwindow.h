@@ -15,12 +15,11 @@ public:
     MainWindow(QWidget *parent = nullptr) : QWidget(parent) {
         // Задаем исходный и отсеченный многоугольники
         subjectPolygon = {
-            Vertex(100, 100), Vertex(200, 100), Vertex(250, 150),
-            Vertex(200, 200), Vertex(100, 200), Vertex(50, 150)
+            Vertex(50, 50), Vertex(200, 50), Vertex(125, 200)
         };
 
         clipWindow = {
-            Vertex(150, 50), Vertex(300, 100), Vertex(250, 250), Vertex(100, 200)
+            Vertex(150, 100), Vertex(300, 75), Vertex(200, 200)
         };
         clippedPolygon = weilerAthertonClip(subjectPolygon, clipWindow);
     }
@@ -51,6 +50,7 @@ private:
     void drawPolygon(QPainter &painter, const Polygon &polygon) {
         for (int i = 0; i < polygon.size(); ++i) {
             int next = (i + 1) % polygon.size();
+            qDebug() << polygon[i].x << polygon[i].y;
             painter.drawLine(QPointF(polygon[i].x, polygon[i].y),
                              QPointF(polygon[next].x, polygon[next].y));
         }
